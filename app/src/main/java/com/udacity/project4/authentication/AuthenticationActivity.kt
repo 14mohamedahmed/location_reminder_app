@@ -28,30 +28,32 @@ class AuthenticationActivity : AppCompatActivity() {
         const val SIGN_IN_RESULT_CODE = 1001
     }
 
+    private lateinit var binding: ActivityAuthenticationBinding
+
     // Get a reference to the ViewModel scoped to this Fragment.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_authentication)
-
-        val binding = DataBindingUtil.setContentView<ActivityAuthenticationBinding>(
-            this,
-            R.layout.activity_authentication
-        )
-        binding.lifecycleOwner = this
-
         // listen to login AuthState if authenticated navigate to reminder activity
+        // else start init authentication activity
         viewModel.state.observe(this, androidx.lifecycle.Observer { authenticationState ->
             when (authenticationState) {
                 LoginViewModel.State.AUTHENTICATED -> navigateToReminderActivity()
+                LoginViewModel.State.UNAUTHENTICATED -> {
+                    initLoginActivity()
+                }
             }
         })
-        // start login with Auth UI if user not logged in
+    }
+
+    private fun initLoginActivity() {
+        binding = DataBindingUtil.setContentView<ActivityAuthenticationBinding>(
+            this, R.layout.activity_authentication
+        )
+        binding.lifecycleOwner = this
         binding.loginBtn.setOnClickListener(View.OnClickListener {
             signInWithAuthUI()
         })
-
-//          TODO: If the user was authenticated, send him to RemindersActivity
-
     }
 
     private fun signInWithAuthUI() {
