@@ -58,13 +58,11 @@ class RemindersActivityTest :
         }
         //Get our real repository
         repository = get()
-
         //clear the data to start fresh
         runBlocking {
             repository.deleteAllReminders()
         }
     }
-
 
 //    TODO: add End to End testing to the app
 
