@@ -1,9 +1,12 @@
 package com.udacity.project4.locationreminders.reminderslist
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
+import com.firebase.ui.auth.AuthUI
 import com.udacity.project4.R
+import com.udacity.project4.authentication.AuthenticationActivity
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentRemindersBinding
@@ -17,18 +20,15 @@ class ReminderListFragment : BaseFragment() {
     override val _viewModel: RemindersListViewModel by viewModel()
     private lateinit var binding: FragmentRemindersBinding
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        binding =
-            DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_reminders, container, false
-            )
+        binding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_reminders, container, false
+        )
         binding.viewModel = _viewModel
 
         setHasOptionsMenu(true)
-        setDisplayHomeAsUpEnabled(false)
+        setDisplayHomeAsUpEnabled(true)
         setTitle(getString(R.string.app_name))
 
         binding.refreshLayout.setOnRefreshListener { _viewModel.loadReminders() }
@@ -61,8 +61,7 @@ class ReminderListFragment : BaseFragment() {
     }
 
     private fun setupRecyclerView() {
-        val adapter = RemindersListAdapter {
-        }
+        val adapter = RemindersListAdapter {}
 
 //        setup the recycler view using the extension function
         binding.reminderssRecyclerView.setup(adapter)
@@ -71,11 +70,25 @@ class ReminderListFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.logout -> {
-//                TODO: add the logout implementation
+                proceedToSignOut()
             }
         }
         return super.onOptionsItemSelected(item)
 
+    }
+
+    // start sign out and navigate to authentication activity when success
+    private fun proceedToSignOut() {
+        AuthUI.getInstance().signOut(requireContext()).addOnCompleteListener {
+                navigateToAuthLandingPage()
+            }
+    }
+
+    private fun navigateToAuthLandingPage() {
+        Intent(requireActivity(), AuthenticationActivity::class.java).apply {
+            startActivity(this)
+            requireActivity().finish()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
