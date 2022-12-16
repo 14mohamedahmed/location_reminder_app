@@ -82,9 +82,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         inflater.inflate(R.menu.map_options, menu)
     }
 
-    override fun onMapReady(googleMap: GoogleMap?) {
-        if (googleMap != null) {
-            map = googleMap
+    override fun onMapReady(p0: GoogleMap) {
+        if (p0 != null) {
+            map = p0
             setMapLongClick(map)
             setPoiClick(map)
             setMapStyle(map)
