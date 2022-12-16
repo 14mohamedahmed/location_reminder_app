@@ -39,7 +39,7 @@ class AuthenticationActivity : AppCompatActivity() {
         viewModel.state.observe(this, androidx.lifecycle.Observer { authenticationState ->
             when (authenticationState) {
                 LoginViewModel.State.AUTHENTICATED -> navigateToReminderActivity()
-                LoginViewModel.State.UNAUTHENTICATED -> {
+                else -> {
                     initLoginActivity()
                 }
             }
