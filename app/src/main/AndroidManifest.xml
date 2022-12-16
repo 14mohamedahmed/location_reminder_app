@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.udacity.project4">
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -9,7 +10,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!--         The BACKGROUND_LOCATION permission is required for geofencing functionality to work on Q+ -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -23,7 +23,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".locationreminders.ReminderDescriptionActivity"></activity>
+<!--        <activity-->
+<!--            android:name="com.google.firebase.auth.internal.FederatedSignInActivity"-->
+<!--            android:launchMode="standard"-->
+<!--            tools:replace="android:launchMode" />-->
+
+        <activity android:name=".locationreminders.ReminderDescriptionActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -36,15 +41,16 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".authentication.AuthenticationActivity">
+        <activity
+            android:name=".authentication.AuthenticationActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".locationreminders.RemindersActivity">
-        </activity>
+        <activity android:name=".locationreminders.RemindersActivity"></activity>
 
         <receiver
             android:name=".locationreminders.geofence.GeofenceBroadcastReceiver"
