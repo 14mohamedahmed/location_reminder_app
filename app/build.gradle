@@ -114,6 +114,7 @@ dependencies {
     //Maps & Geofencing
     implementation "com.google.android.gms:play-services-location:$playServicesVersion"
     implementation "com.google.android.gms:play-services-maps:$playServicesGoogleMapVersion"
+    androidTestImplementation project(path: ':app')
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 
@@ -124,7 +125,7 @@ dependencies {
     implementation 'androidx.test.espresso:espresso-idling-resource:3.5.0'
     androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.5.0'
 
-    androidTestImplementation "androidx.navigation:navigation-testing:$navigationVersion"
+//    androidTestImplementation "androidx.navigation:navigation-testing:$navigationVersion"
 
     implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
