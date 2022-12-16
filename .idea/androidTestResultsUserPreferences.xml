@@ -3,6 +3,20 @@
   <component name="AndroidTestResultsUserPreferences">
     <option name="androidTestResultsTableState">
       <map>
+        <entry key="-1487571974">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                  <entry key="V4V4B69PSSMR8DEQ" value="120" />
+                  <entry key="realme&#10; RMX2185" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-1417842176">
           <value>
             <AndroidTestResultsTableState>
@@ -130,6 +144,20 @@
           </value>
         </entry>
         <entry key="1960108270">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                  <entry key="V4V4B69PSSMR8DEQ" value="120" />
+                  <entry key="realme&#10; RMX2185" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="2103642358">
           <value>
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
