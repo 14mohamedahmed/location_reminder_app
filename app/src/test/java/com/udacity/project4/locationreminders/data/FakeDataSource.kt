@@ -4,10 +4,11 @@ import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 
 //Use FakeDataSource that acts as a test double to the LocalDataSource
-class FakeDataSource(private var reminders: MutableList<ReminderDTO>? = mutableListOf()) :
+class FakeDataSource(private var reminders: MutableList<ReminderDTO> = mutableListOf()) :
     ReminderDataSource {
 
     private var shouldReturnError = false
+
     // this function to force return error to test if function failed what happen
     fun setReturnError(value: Boolean) {
         shouldReturnError = value
@@ -22,36 +23,28 @@ class FakeDataSource(private var reminders: MutableList<ReminderDTO>? = mutableL
             )
         }
         // if reminders not empty return all and make result is success
-        reminders?.let { return Result.Success(it) }
-        return Result.Error("Reminders not found")
+        return com.udacity.project4.locationreminders.data.dto.Result.Success(reminders)
     }
 
     // save reminder in database
     override suspend fun saveReminder(reminder: ReminderDTO) {
-        reminders?.add(reminder)
+        reminders.add(reminder)
     }
 
     // get reminder by given id if exist return it if shouldReturnError is false otherwise return error message
     // that we didn't find the reminder (reminder not found!)
     override suspend fun getReminder(id: String): Result<ReminderDTO> {
-        var reminder = reminders?.find {
+        var reminder = reminders.find {
             it.id == id
         }
-        return when {
-            shouldReturnError -> {
-                Result.Error("Reminder not found!")
-            }
-            reminder != null -> {
-                Result.Success(reminder)
-            }
-            else -> {
-                Result.Error("Reminder not found!")
-            }
+        if (shouldReturnError) {
+            return Result.Error("Reminder not found!")
         }
+        return Result.Success(reminder!!)
     }
 
     // delete all reminder from database
     override suspend fun deleteAllReminders() {
-        reminders?.clear()
+        reminders.clear()
     }
 }
