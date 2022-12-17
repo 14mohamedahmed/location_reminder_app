@@ -36,16 +36,6 @@ class ReminderListFragment : BaseFragment() {
     override val _viewModel: RemindersListViewModel by inject()
     private lateinit var binding: FragmentRemindersBinding
 
-    companion object {
-        private val runningQOrLater =
-            android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
-        private val foregroundPermissionIndex = 0
-        private val backgroundPermissionIndex = 1
-        private val requestDeviceLocation = 29
-        private val requestForegroundPermission = 34
-        private val requestForegroundAndBackgroundPermissions = 33
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -68,7 +58,7 @@ class ReminderListFragment : BaseFragment() {
         binding.lifecycleOwner = this
         setupRecyclerView()
         binding.addReminderFAB.setOnClickListener {
-            navigateToAddReminder()
+            navigateToSaveReminder()
         }
     }
 
@@ -76,11 +66,6 @@ class ReminderListFragment : BaseFragment() {
         super.onResume()
         //load the reminders list on the ui
         _viewModel.loadReminders()
-    }
-
-    private fun navigateToAddReminder() {
-        //use the navigationCommand live data to navigate between the fragments
-        requestForegroundAndBackgroundLocationPermissions()
     }
 
     private fun navigateToSaveReminder() {
@@ -128,111 +113,5 @@ class ReminderListFragment : BaseFragment() {
         inflater.inflate(R.menu.main_menu, menu)
     }
 
-    // check if foregroundAndBackgroundLocationPermissionApproved is true or false
-    @TargetApi(29)
-    private fun foregroundAndBackgroundLocationPermissionApproved(): Boolean {
-        val foregroundLocationApproved =
-            (PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-            ))
-        val backgroundPermissionApproved = if (runningQOrLater) {
-            PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            )
-        } else {
-            true
-        }
-        return foregroundLocationApproved && backgroundPermissionApproved
-    }
-
-    // if location permissions not approved request them
-    @TargetApi(29)
-    private fun requestForegroundAndBackgroundLocationPermissions() {
-        Log.e(
-            "TAG",
-            "requestForegroundAndBackgroundLocationPermissions: " + foregroundAndBackgroundLocationPermissionApproved()
-        )
-        if (foregroundAndBackgroundLocationPermissionApproved()) {
-            navigateToSaveReminder()
-            return
-        }
-        var permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        val requestCode = when {
-            runningQOrLater -> {
-                permissionsArray += Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                requestForegroundAndBackgroundPermissions
-            }
-            else -> requestForegroundPermission
-        }
-        requestPermissions(permissionsArray, requestCode)
-    }
-
-    // on callback check if user grant permissions or not
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults: IntArray
-    ) {
-        if (grantResults.isEmpty() || grantResults[foregroundPermissionIndex] == PackageManager.PERMISSION_DENIED || (requestCode == requestForegroundAndBackgroundPermissions && grantResults[backgroundPermissionIndex] == PackageManager.PERMISSION_DENIED)) {
-            // when user denied them again display Snackbar to navigate to app setting to let user accepted them manually
-            Snackbar.make(
-                requireView(), R.string.permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
-            ).setAction(R.string.settings) {
-                startActivity(Intent().apply {
-                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                })
-            }.show()
-        } else {
-            // handle user device location is on
-            checkDeviceLocationSettingsAndStartSaveReminder()
-        }
-    }
-
-    // handle user device location is on
-    private fun checkDeviceLocationSettingsAndStartSaveReminder(resolve: Boolean = true) {
-        val locationRequest = LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_LOW_POWER
-        }
-        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-        val settingsClient = LocationServices.getSettingsClient(requireActivity())
-        val locationSettingsResponseTask = settingsClient.checkLocationSettings(builder.build())
-
-        locationSettingsResponseTask.addOnFailureListener { exception ->
-            if (exception is ResolvableApiException && resolve) {
-                try {
-                    startIntentSenderForResult(
-                        exception.resolution.intentSender,
-                        requestDeviceLocation,
-                        null,
-                        0,
-                        0,
-                        0,
-                        null
-                    )
-
-                } catch (sendEx: IntentSender.SendIntentException) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Error Occurred when getting location setting",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                }
-            } else {
-                Snackbar.make(
-                    requireView(), R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
-                ).setAction(android.R.string.ok) {
-                    checkDeviceLocationSettingsAndStartSaveReminder()
-                }.show()
-            }
-        }
-        locationSettingsResponseTask.addOnCompleteListener {
-            Log.e("TAG", "checkDeviceLocationSettingsAndStartSaveReminder:  $it")
-            if (it.isSuccessful) {
-                Log.e("TAG", "checkDeviceLocationSettingsAndStartSaveReminder:  SUCCESS")
-                navigateToSaveReminder()
-            }
-        }
-    }
 
 }
