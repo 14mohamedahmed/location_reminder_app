@@ -1,5 +1,6 @@
 package com.udacity.project4
 
+import android.app.Activity
 import android.app.Application
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -7,6 +8,7 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -20,6 +22,7 @@ import com.udacity.project4.util.DataBindingIdlingResource
 import com.udacity.project4.util.monitorActivity
 import com.udacity.project4.utils.EspressoIdlingResource
 import kotlinx.coroutines.runBlocking
+import org.hamcrest.CoreMatchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -161,5 +164,50 @@ class RemindersActivityTest :
         Espresso.onView(ViewMatchers.withId(R.id.saveReminder)).perform(ViewActions.click())
         // close activity
         activityScenario.close()
+    }
+
+
+    // show toast message when saving new reminder success
+    @Test
+    fun saveReminderScreen_showToastMessage() {
+        // start activity
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+        // navigate to save reminder page
+        Espresso.onView(ViewMatchers.withId(R.id.addReminderFAB)).perform(ViewActions.click())
+        // type reminder data
+        Espresso.onView(ViewMatchers.withId(R.id.reminderTitle))
+            .perform(ViewActions.typeText("Title"))
+        Espresso.closeSoftKeyboard()
+        Espresso.onView(ViewMatchers.withId(R.id.reminderDescription))
+            .perform(ViewActions.typeText("Description"))
+        Espresso.closeSoftKeyboard()
+        // click on pick location
+        Espresso.onView(ViewMatchers.withId(R.id.selectLocation)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.map)).perform(ViewActions.longClick())
+        // click save location
+        Espresso.onView(ViewMatchers.withId(R.id.save_location_btn)).perform(ViewActions.click())
+        // click on save reminder => expected sucess
+        Espresso.onView(ViewMatchers.withId(R.id.saveReminder)).perform(ViewActions.click())
+        // display toast message
+        Espresso.onView(ViewMatchers.withText(R.string.reminder_saved)).inRoot(
+            RootMatchers.withDecorView(
+                CoreMatchers.not(
+                    CoreMatchers.`is`(
+                        getActivity(activityScenario).window.decorView
+                    )
+                )
+            )
+        ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        // close activity
+        activityScenario.close()
+    }
+
+    private fun getActivity(activityScenario: ActivityScenario<RemindersActivity>): Activity {
+        lateinit var activity: Activity
+        activityScenario.onActivity {
+            activity = it
+        }
+        return activity
     }
 }
