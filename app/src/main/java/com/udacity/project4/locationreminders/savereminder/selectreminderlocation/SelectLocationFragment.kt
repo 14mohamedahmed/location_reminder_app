@@ -106,7 +106,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             setMapLongClick(map)
             setPoiClick(map)
             setMapStyle(map)
-            enableMyLocationButton()
         }
     }
 
@@ -221,27 +220,23 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     // get current user location and move camera to it and add marker to this location
     private fun startListenForLocation() {
-        val locationResult = fusedLocationProviderClient.lastLocation
-        locationResult.addOnCompleteListener(requireActivity()) { task ->
-            if (task.isSuccessful) {
-                // Set the map's camera position to the current location of the device.
-                val lastLocation = task.result
-                if (lastLocation != null) {
-                    map.moveCamera(
-                        CameraUpdateFactory.newLatLngZoom(
-                            LatLng(
-                                lastLocation.latitude, lastLocation.longitude
-                            ), 18f
-                        )
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
+            Log.e("TAG", "startListenForLocation: " + location)
+            location?.let {
+                // when get location permission just assign lat and long to map camera and add new marker
+                val userLocation = LatLng(location.latitude, location.longitude)
+                map.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        userLocation, 15f
                     )
-                    marker = map.addMarker(
-                        MarkerOptions().position(
-                            LatLng(
-                                lastLocation.latitude, lastLocation.longitude
-                            )
-                        ).title("Current Location")
-                    )
-                }
+                )
+                marker = map.addMarker(
+                    MarkerOptions().position(userLocation).title("Current Location")
+                )
+                marker?.showInfoWindow()
+            }
+            if (location == null) {
+                startListenForLocation()
             }
         }
     }
