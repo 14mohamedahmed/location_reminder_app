@@ -97,12 +97,13 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     override fun onMapReady(p0: GoogleMap) {
         if (p0 != null) {
-            if (!isPermissionGranted()) {
-                enableMyLocationButton()
-            } else {
-                checkDeviceLocationSettingsAndLocationListener()
-            }
+
             map = p0
+            enableMyLocationButton()
+
+//            if (!ifisPermissionGranted()) {
+//                checkDeviceLocationSettingsAndLocationListener()
+//            }
             setMapLongClick(map)
             setPoiClick(map)
             setMapStyle(map)

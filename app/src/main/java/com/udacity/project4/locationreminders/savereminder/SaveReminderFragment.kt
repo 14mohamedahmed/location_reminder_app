@@ -96,7 +96,7 @@ class SaveReminderFragment : BaseFragment() {
             if (_viewModel.validateEnteredData(selectedReminderItem)) {
                 // check if permission enabled to start add geofence
                 if (foregroundAndBackgroundLocationPermissionApproved()) {
-                    addGeofenceForSelectedLocation()
+                   checkDeviceLocationSettingsAndStartSaveReminder()
                 } else {
                     // if not approved request them
                     requestForegroundAndBackgroundLocationPermissions()
