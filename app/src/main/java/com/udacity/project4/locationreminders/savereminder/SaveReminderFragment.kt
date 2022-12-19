@@ -3,6 +3,7 @@ package com.udacity.project4.locationreminders.savereminder
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
+import android.app.Activity
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentSender
@@ -144,6 +145,15 @@ class SaveReminderFragment : BaseFragment() {
             else -> requestForegroundPermission
         }
         requestPermissions(permissionsArray, requestCode)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == requestDeviceLocation) {
+            if (resultCode != Activity.RESULT_OK) {
+                checkDeviceLocationSettingsAndStartSaveReminder(false)
+            }
+        }
     }
 
     // on callback check if user grant permissions or not
