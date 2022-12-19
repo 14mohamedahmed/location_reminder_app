@@ -16,14 +16,13 @@ class FakeDataSource(private var reminders: MutableList<ReminderDTO> = mutableLi
 
     // get all reminders if shouldReturnError not equal to true otherwise we need to return an fakse
     override suspend fun getReminders(): Result<List<ReminderDTO>> {
-        // if set to true we will return error message
-        if (shouldReturnError) {
-            return Result.Error(
-                "Error getting reminders"
-            )
+        return if (shouldReturnError) {
+            // if set to true we will return error message
+            Result.Error("Error getting reminders")
+        } else {
+            // if reminders not empty return all and make result is success
+            Result.Success(ArrayList(reminders))
         }
-        // if reminders not empty return all and make result is success
-        return com.udacity.project4.locationreminders.data.dto.Result.Success(reminders)
     }
 
     // save reminder in database
@@ -34,13 +33,19 @@ class FakeDataSource(private var reminders: MutableList<ReminderDTO> = mutableLi
     // get reminder by given id if exist return it if shouldReturnError is false otherwise return error message
     // that we didn't find the reminder (reminder not found!)
     override suspend fun getReminder(id: String): Result<ReminderDTO> {
-        var reminder = reminders.find {
-            it.id == id
-        }
+        // force return error
         if (shouldReturnError) {
             return Result.Error("Reminder not found!")
         }
-        return Result.Success(reminder!!)
+        var reminder = reminders.find {
+            it.id == id
+        }
+        // check if reminder exist return it otherwise return reminde not found!
+        return if (reminder!=null){
+            Result.Success(reminder)
+        } else{
+            Result.Error("Reminder not found!")
+        }
     }
 
     // delete all reminder from database
