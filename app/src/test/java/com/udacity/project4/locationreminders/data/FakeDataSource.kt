@@ -35,7 +35,7 @@ class FakeDataSource(private var reminders: MutableList<ReminderDTO> = mutableLi
     override suspend fun getReminder(id: String): Result<ReminderDTO> {
         // force return error
         if (shouldReturnError) {
-            return Result.Error("Reminder not found!")
+            return Result.Error("Something wrong happen while getting reminder by id.!")
         }
         var reminder = reminders.find {
             it.id == id
