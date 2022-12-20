@@ -152,6 +152,9 @@ class SaveReminderFragment : BaseFragment() {
         if (requestCode == requestDeviceLocation) {
             if (resultCode != Activity.RESULT_OK) {
                 checkDeviceLocationSettingsAndStartSaveReminder(false)
+            }else {
+                // add geofence when device location enable by user
+                addGeofenceForSelectedLocation();
             }
         }
     }
@@ -216,7 +219,6 @@ class SaveReminderFragment : BaseFragment() {
             }
         }
         locationSettingsResponseTask.addOnCompleteListener {
-            Log.e("TAG", "checkDeviceLocationSettingsAndStartSaveReminder:  $it")
             if (it.isSuccessful) {
                 Log.e("TAG", "checkDeviceLocationSettingsAndStartSaveReminder:  SUCCESS")
                 addGeofenceForSelectedLocation()
